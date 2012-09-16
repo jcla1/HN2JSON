@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency    "rest-client",  "~> 1.6.7"
   s.add_dependency    "nokogiri",  "~> 1.5.5"
+  s.add_dependency    "chronic",  "~> 0.7.0"
 
   #s.files            += Dir.glob("bin/**/*")
   #s.executables       = %w( hn2json )

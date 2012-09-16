@@ -3,7 +3,7 @@ module HN2JSON
   class Entity
 
     attr_accessor :type, :id, :parent, :url, :title, :comments, :votes
-    attr_accessor :full_text, :posted_by, :date_posted, :voting_on
+    attr_accessor :fulltext, :posted_by, :date_posted, :voting_on
 
     def initialize id
       @id = id
@@ -12,7 +12,7 @@ module HN2JSON
       @parent = nil
       @url = nil
       @title = nil
-      @full_text = nil
+      @fulltext = nil
       @posted_by = nil
       @date_posted = nil
       @voting_on = nil
@@ -21,6 +21,8 @@ module HN2JSON
 
       get_page
       determine_type
+
+      get_attrs
     end
 
     def get_page
@@ -30,6 +32,14 @@ module HN2JSON
 
     def determine_type
       @type = @parser.determine_type
+    end
+
+    def get_attrs
+      eval("@parser.get_attrs_#{@type.to_s} self")
+    end
+
+    def add_attrs
+      yield self
     end
 
   end
