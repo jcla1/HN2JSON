@@ -13,7 +13,11 @@ module HN2JSON
     private
 
     def request_page
-      @html = RestClient.get @complete_url
+      begin
+        @html = RestClient.get @complete_url
+      rescue Exception
+        @html = ""
+      end
     end
 
   end

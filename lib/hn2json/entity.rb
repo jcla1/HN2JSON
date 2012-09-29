@@ -35,7 +35,17 @@ module HN2JSON
     end
 
     def get_attrs
-      eval("@parser.get_attrs_#{@type.to_s} self")
+      case @type
+        when :post
+          @parser.get_attrs_post self
+        when :comment
+          @parser.get_attrs_comment self
+        when :poll
+          @parser.get_attrs_poll self
+        when :discussion
+          @parser.get_attrs_discussion self
+        when :error
+        end
     end
 
     def add_attrs

@@ -4,7 +4,10 @@ module HN2JSON
 
   class Parser
     def initialize response
-      @doc = Nokogiri::HTML::DocumentFragment.parse response.html
+
+      html = response.html
+      html.force_encoding "UTF-8"
+      @doc = Nokogiri::HTML::DocumentFragment.parse html
     end
 
 
@@ -12,18 +15,20 @@ module HN2JSON
       title = @doc.css('.title a')
 
       if title.length < 1
-        return :comment
-      else
-        forms = @doc.css('td form')
-        if forms.length === 1
-          return :poll
+        if @doc.css('td').length > 7
+          return :comment
         else
-          forms = @doc.css('td')[10].css('form')
-          if forms.length === 1
-            return :post
-          else
-            return :discussion
-          end
+          return :error
+        end
+      else
+        td = @doc.css('td')[10]
+
+        if td.css('table').length > 0
+          return :poll
+        elsif td.content != ''
+          return :discussion
+        else
+          return :post
         end
       end
 
@@ -103,28 +108,91 @@ module HN2JSON
       end
     end
 
-#    def get_attrs_poll entity
-#      entity.add_attrs do |e|
-#        e.title =
-#        e.fulltext =
-#        e.date_posted =
-#        e.posted_by =
-#        e.votes =
-#        e.comments =
-#        voting_on =
-#      end
-#    end
-#
-#    def get_attrs_discussion entity
-#      entity.add_attrs do |e|
-#        e.title =
-#        e.fulltext =
-#        e.date_posted =
-#        e.posted_by =
-#        e.comments =
-#        e.votes =
-#      end
-#    end
+    def get_attrs_poll entity
+
+      title = @doc.css('.title a')[0].content
+
+      td = @doc.css('td')[10]
+
+      if td.css('table').length > 0
+        fulltext = ''
+        voting_on = voting_on_from_table td.css('table')[0]
+      else
+        fulltext = td.content
+        voting_on = voting_on_from_table @doc.css('td')[12].css('table')[0]
+      end
+
+
+      entity.add_attrs do |e|
+        e.title = title
+        e.fulltext = fulltext
+        #e.date_posted = date_posted
+        #e.posted_by = posted_by
+        #e.votes = votes
+        #e.comments = comments
+        #e.voting_on = voting_on
+      end
+    end
+
+    def get_attrs_discussion entity
+
+      title = @doc.css('.title a')[0].content
+
+      fulltext = @doc.css('td')[10].content
+
+      subtext = @doc.css('.subtext')[0]
+
+      date_regex = /.*\s(.*\s.*\sago)/
+      ago = date_regex.match(subtext.content)[1]
+      date_posted = Chronic.parse(ago).to_s
+
+      posted_by = subtext.css('a')[0].content
+
+      votes = subtext.css('span')[0].content.to_i
+
+      comments = []
+
+      full_comments = @doc.css('td > img[width="0"]').xpath("..").xpath("..").css('.default')
+
+      full_comments.each do |comment|
+        comment_id = comment.css('span a')[1]['href'].gsub("item?id=", '')
+        comments.push comment_id
+      end
+
+      entity.add_attrs do |e|
+        e.title = title
+        e.fulltext = fulltext
+        e.date_posted = date_posted
+        e.posted_by = posted_by
+        e.comments = comments
+        e.votes = votes
+      end
+    end
+
+    def voting_on_from_table table
+      trs = table.css('tr')
+
+      voting_on = []
+
+      (trs.length / 3).times do 
+        voting_on.push []
+      end
+
+      i = 0
+      while i <= trs.length
+        if i + 1 % 3 != 0
+          if i % 2 == 0
+            puts i % 3
+            voting_on[(i - 1) % 3].push trs[i].css('.comment > div > font')[0].content
+          else
+            voting_on[i % 3].push trs[i].css('.default > .comhead > span')[0].content.gsub(/\spoints?/, '')
+          end
+        end
+        i += 1
+      end
+
+      return []
+    end
 
   end
 
