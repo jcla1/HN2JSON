@@ -15,8 +15,13 @@ module HN2JSON
     def request_page
       begin
         @html = RestClient.get @complete_url
-      rescue Exception
-        @html = ""
+      rescue
+        raise RequestError, "there was an error requesting the page, check your connection"
+      end
+
+      if @html == "No such item." || @html == "Unknown."
+        id = @complete_url.gsub(/^.*id\=/, '')
+        raise RequestError, "no such item or id, #{id}"
       end
     end
 

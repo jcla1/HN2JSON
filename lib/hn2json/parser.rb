@@ -7,7 +7,11 @@ module HN2JSON
 
       html = response.html
       html.force_encoding "UTF-8"
-      @doc = Nokogiri::HTML::DocumentFragment.parse html
+      begin
+        @doc = Nokogiri::HTML::DocumentFragment.parse html
+      rescue
+        raise ParseError, "there was an error parsing the page"
+      end
     end
 
 
@@ -21,11 +25,11 @@ module HN2JSON
           return :error
         end
       else
-        td = @doc.css('td')[10]
+        td = @doc.css('td')[12]
 
         if td.css('table').length > 0
           return :poll
-        elsif td.content != ''
+        elsif td.css('form').length == 1
           return :discussion
         else
           return :post
@@ -122,14 +126,32 @@ module HN2JSON
         voting_on = voting_on_from_table @doc.css('td')[12].css('table')[0]
       end
 
+      subtext = @doc.css('.subtext')[0]
+
+      date_regex = /.*\s(.*\s.*\sago)/
+      ago = date_regex.match(subtext.content)[1]
+      date_posted = Chronic.parse(ago).to_s
+
+      posted_by = subtext.css('a')[0].content
+
+      votes = subtext.css('span')[0].content.to_i
+
+      comments = []
+
+      full_comments = @doc.css('td > img[width="0"]').xpath("..").xpath("..").css('.default')
+
+      full_comments.each do |comment|
+        comment_id = comment.css('span a')[1]['href'].gsub("item?id=", '')
+        comments.push comment_id
+      end
 
       entity.add_attrs do |e|
         e.title = title
         e.fulltext = fulltext
-        #e.date_posted = date_posted
-        #e.posted_by = posted_by
-        #e.votes = votes
-        #e.comments = comments
+        e.date_posted = date_posted
+        e.posted_by = posted_by
+        e.votes = votes
+        e.comments = comments
         #e.voting_on = voting_on
       end
     end

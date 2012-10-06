@@ -5,19 +5,22 @@ require 'chronic'
 module HN2JSON
   extend HN2JSON
 
-  autoload :Request,    'hn2json/request'
+  autoload :Request,        'hn2json/request'
 
-  autoload :Parser,     'hn2json/parser'
+  autoload :Parser,         'hn2json/parser'
 
-  autoload :Entity,      'hn2json/entity'
+  autoload :Entity,         'hn2json/entity'
 
   autoload :InvalidIdError, 'hn2json/exceptions'
+  autoload :RequestError,   'hn2json/exceptions'
+  autoload :ParseError,     'hn2json/exceptions'
 
-  autoload :VERSION,    'hn2json/version'
+  autoload :VERSION,        'hn2json/version'
+
 
   def find id
-  	check_for_falsy_id id
-  	Entity.new id
+    check_for_falsy_id id
+    Entity.new id
   end
 
   private
