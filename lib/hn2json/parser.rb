@@ -3,6 +3,9 @@ module HN2JSON
   # Public: Parse HTML to produce HackerNews entities
 
   class Parser
+
+    attr_reader :doc
+
     def initialize response
 
       html = response.html
@@ -148,9 +151,11 @@ module HN2JSON
     end
 
 
-    private
+    #private
 
     def get_voting_on table
+      fulltext = ''
+      voting_on = ''
     end
 
     def get_comments
@@ -168,9 +173,32 @@ module HN2JSON
       # $tr = $('tr')
       # $($tr[$tr.length - 3]).find('a').eq(0).attr('href')
 
-      #trs = @doc.css('tr')
+      comments = get_comments_more doc, comments
 
-      #more_url = trs[trs.length - 3].css('a')[0]['href']
+      return comments
+    end
+
+    def get_comments_more doc, comments, flag=false
+      trs = doc.css('tr .title a')
+
+      if trs.length == 0
+        return comments
+      end
+
+      url = trs.last['href']
+
+      url_regex = /\/x\?fnid=(.*)/
+
+      match = url_regex.match(url)
+
+      if match == nil
+        return comments
+      end
+
+      req = Request.new match[1], true
+      parser = Parser.new req
+
+      comments = comments + parser.get_comments
 
       return comments
     end
