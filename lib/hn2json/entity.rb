@@ -1,9 +1,40 @@
 module HN2JSON
-
+  # Internal: Represents a post, poll, discussion or comment on HackerNews.
   class Entity
 
-    attr_accessor :type, :id, :parent, :url, :title, :comments, :votes
-    attr_accessor :fulltext, :posted_by, :date_posted, :voting_on
+    # Public: Returns the IDs of all top-level comments.
+    attr_reader :comments
+
+    # Public: Returns the String date when the Entity was posted to HackerNews.
+    attr_reader :date_posted
+
+    # Public: Return the String text of the Entity, if available.
+    attr_reader :fulltext
+
+    # Public: Returns the Integer ID of the Entity
+    attr_reader :id
+
+    # Public: Returns the Integer ID of the parent, if available
+    attr_reader :parent
+
+    # Public: Returns the String username of the user who posted the Entity
+    attr_reader :posted_by
+
+    # Public: Returns the String title of the Entity, if available
+    attr_reader :title
+
+    # Public: Returns the Symbol type of the Entity (:post, :poll, :discussion, :comment)
+    attr_reader :type
+
+    # Public: Returns the String url of an Entity, if available
+    attr_reader :url
+
+    # Public: Returns the Interger number of upvotes the Entity has recieved
+    attr_reader :votes
+
+    # Public: Returns a 2D Array of ["Thing you're voting on", number of upvotes]
+    attr_reader :voting_on
+
 
     def initialize id
       @id = id
