@@ -78,7 +78,16 @@ module HN2JSON
         when :error
         end
     end
-
+    
+    # Internal: Yields self for adding attr
+    #
+    # Examples
+    #
+    #   entity.add_attrs do |entity|
+    #     entity.title = "Hello World!"
+    #   end
+    #
+    # Returns nothing.
     def add_attrs
       yield self
     end
