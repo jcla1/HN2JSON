@@ -1,3 +1,4 @@
 dist
 pkg
 Gemfile.lock
+*.gem
