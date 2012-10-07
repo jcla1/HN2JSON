@@ -21,7 +21,8 @@ module HN2JSON
     def determine_type
       title = @doc.css('.title a')
 
-      if title.length < 1
+
+      if title.length < 1 || title[0].content == "More"
         if @doc.css('td').length > 7
           return :comment
         else
@@ -151,8 +152,6 @@ module HN2JSON
     end
 
 
-    #private
-
     def get_voting_on table
       fulltext = ''
       voting_on = ''
@@ -178,7 +177,7 @@ module HN2JSON
       return comments
     end
 
-    def get_comments_more doc, comments, flag=false
+    def get_comments_more doc, comments
       trs = doc.css('tr .title a')
 
       if trs.length == 0
