@@ -114,9 +114,18 @@ module HN2JSON
 
       comments = get_comments
 
+
+      fulltext_elem = @doc.css('tr[style="height:2px"] + tr > td')
+
+      if fulltext_elem.length == 2
+        fulltext = fulltext_elem[1].content
+      else
+        fulltext = ''
+      end
+
       entity.add_attrs do |e|
         e.title = title
-        #e.fulltext = fulltext
+        e.fulltext = fulltext
         e.date_posted = date_posted
         e.posted_by = posted_by
         e.votes = votes
