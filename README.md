@@ -11,4 +11,7 @@ item.title
 
 item.votes
 # => 1
+
+item...
+# => Some other property
 ```
