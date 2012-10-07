@@ -123,6 +123,8 @@ module HN2JSON
         fulltext = ''
       end
 
+      voting_on = get_voting_on
+
       entity.add_attrs do |e|
         e.title = title
         e.fulltext = fulltext
@@ -130,7 +132,7 @@ module HN2JSON
         e.posted_by = posted_by
         e.votes = votes
         e.comments = comments
-        #e.voting_on = voting_on
+        e.voting_on = voting_on
       end
     end
 
@@ -161,9 +163,21 @@ module HN2JSON
     end
 
 
-    def get_voting_on table
-      fulltext = ''
-      voting_on = ''
+    def get_voting_on 
+      voting_on = []
+      trs = @doc.css('tr > td + td > table tr')
+
+      trs.each_with_index do |tr, index|
+        if index % 3 == 0
+          voting_on.push []
+          voting_on[(index / 3).floor].push tr.content
+        elsif index % 3 == 1
+          voting_on[(index / 3).floor].push tr.content.gsub(/\spoints/, '')
+        end
+      end
+
+      return voting_on
+
     end
 
     def get_comments
