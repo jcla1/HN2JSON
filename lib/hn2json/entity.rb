@@ -36,7 +36,7 @@ module HN2JSON
     attr_accessor :voting_on
 
 
-    def initialize id
+    def initialize id, preserve_html=false
       @id = id
 
       @type = nil
@@ -54,6 +54,9 @@ module HN2JSON
       determine_type
 
       get_attrs
+
+      remove_instance_variable :@html unless preserve_html
+      remove_instance_variable :@parser unless preserve_html
     end
 
     def get_page

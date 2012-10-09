@@ -27,12 +27,12 @@ module HN2JSON
   # Public: Make a request to HackerNews and extract retrieved data.
   #
   # id  - The ID of the page to request
-  #
+  # preserve_html - If true the html and parser won't be remove form the object (default: false)
   #
   # Returns the fetched HackerNews Entity.
-  def find id
+  def find id, preserve_html=false
     check_for_falsy_id id
-    Entity.new id
+    Entity.new id, preserve_html
   end
 
   private
