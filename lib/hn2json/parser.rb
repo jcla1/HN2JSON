@@ -19,25 +19,29 @@ module HN2JSON
 
 
     def determine_type
-      title = @doc.css('.title a')
 
+      comhead = @doc.css('.comhead')[0]
 
-      if title.length < 1 || title[0].content == "More"
-        if @doc.css('td').length > 7
-          return :comment
-        else
-          return :error
-        end
+      if !!comhead
+
+        return :post if comhead.content.gsub(/\s\(.*\)\s/, '').length == 0
+
+        return :comment if comhead.content.count('|') >= 2
+
+      end
+      
+      subtext = @doc.css('.subtext')[0]
+
+      return :error unless subtext 
+
+      return :special if subtext.content.split.length <= 3
+
+      tr = subtext.xpath('..').xpath('..').css('tr')
+
+      if tr.length == 4 || tr.last.css('form').length == 1
+        return :discussion
       else
-        td = @doc.css('td')[12]
-
-        if td.css('table').length > 0
-          return :poll
-        elsif td.css('form').length == 1
-          return :discussion
-        else
-          return :post
-        end
+        return :poll
       end
 
     end
