@@ -65,8 +65,8 @@ raise RuntimeError, "Something wrong with the comments" unless com1.type == :com
 
 sleep(20)
 
-special = HN2JSON.find 4626238 	# new, special
-raise RuntimeError, "Something wrong with the special" unless special.type == :special
+job = HN2JSON.find 4626238 	# new, job
+raise RuntimeError, "Something wrong with the job" unless job.type == :job
 
 
 puts "All test passed!"

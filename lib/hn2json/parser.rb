@@ -47,6 +47,22 @@ module HN2JSON
     end
 
     def get_attrs_job entity
+
+      title = @doc.css('.title a')[0].content
+
+      subtext = @doc.css('.subtext')[0]
+
+      date_regex = /(.*\s.*\sago)/
+      ago = date_regex.match(subtext.content)[1]
+      date_posted = Chronic.parse(ago).to_s      
+
+      fulltext = @doc.css('td')[10].content
+
+      entity.add_attrs do |e|
+        e.title = title
+        e.date_posted = date_posted
+        e.fulltext = fulltext
+      end
     end
 
     def get_attrs_comment entity
