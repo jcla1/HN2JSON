@@ -34,7 +34,7 @@ module HN2JSON
 
       return :error unless subtext 
 
-      return :special if subtext.content.split.length <= 3
+      return :job if subtext.content.split.length <= 3
 
       tr = subtext.xpath('..').xpath('..').css('tr')
 
@@ -44,6 +44,9 @@ module HN2JSON
         return :poll
       end
 
+    end
+
+    def get_attrs_job entity
     end
 
     def get_attrs_comment entity
