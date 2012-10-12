@@ -79,6 +79,7 @@ module HN2JSON
         when :discussion
           @parser.get_attrs_discussion self
         when :error
+          raise ParseError, "Parser could not determine type on #{@id}"
         end
     end
     
