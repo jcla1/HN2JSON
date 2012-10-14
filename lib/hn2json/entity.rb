@@ -36,7 +36,7 @@ module HN2JSON
     attr_accessor :voting_on
 
 
-    def initialize id, preserve_html=false
+    def initialize id, preserve_html=false, data={}
       @id = id
 
       @type = nil
@@ -49,6 +49,17 @@ module HN2JSON
       @voting_on = nil
       @comments = nil
       @votes = nil
+
+
+      if !data.empty?
+
+        data.keys.each do |key|
+          eval "@#{key} = data[key]"
+        end
+
+        return self
+      end
+
 
       get_page
       determine_type
