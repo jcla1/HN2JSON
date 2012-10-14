@@ -213,11 +213,6 @@ module HN2JSON
         comments.push comment_id
       end
 
-      # TODO: Follow the [More] link
-      #
-      # $tr = $('tr')
-      # $($tr[$tr.length - 3]).find('a').eq(0).attr('href')
-
       comments = get_comments_more doc, comments
 
       return comments
